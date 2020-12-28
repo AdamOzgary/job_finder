@@ -36,7 +36,7 @@ class Recruiter(m.Model):
 
     user = m.OneToOneField(User,
             on_delete=m.CASCADE,
-            pk=True
+            primary_key=True
     )
     organization = m.ForeignKey(Organization,
             m.CASCADE,
@@ -56,7 +56,6 @@ class Vacancy(m.Model):
             related_name='vacanсies'
     )
     key_skills = m.ManyToManyField(KeySkills,
-            on_delete=m.SET_NULL,
             related_name="vacancies"
     )
     organization = m.ForeignKey(Organization,
@@ -77,6 +76,5 @@ class Resume(m.Model):
             related_name="resumes"
     )
     key_skills = m.ManyToManyField(KeySkills,
-            on_delete=m.SET_NULL,
             related_name="resumes"
     )

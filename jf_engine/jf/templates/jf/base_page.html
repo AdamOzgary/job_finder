@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block page_head %}
+    
+    {% endblock %}
+    <title>
+        {% block title %}
+            Base Page
+        {% endblock %}
+    </title>
+</head>
+<body>
+    <header>
+        <div class="navbar-box">
+            <div class="navbar">
+                <div class="left">
+                    <div class="logo el">Job Finder</div>
+                </div>
+                <div class="right">
+                    {% if user.is_authenticated %}
+                        <div class="user-info el">{{ user.get_username }}</div>
+                        <div class="drop-down-user-list">
+                            <a href="#" class="sign-out"><div class="btn">Sign Out</div></a>
+                        </div>
+                    {% else %}
+                        <a href="#" class="sign-in el"><div class="btn">Sign In</div></a>
+                        <a href="#" class="sign-up el"><div class="btn">Sign Up</div></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="main-box">
+            {% block content %}
+                Base Content
+            {% endblock %}
+        </div>
+    </main>
+    <footer>
+        <div class="footer-box">
+            <div class="">footer</div>
+            <div class="help">
+                <a href="#" class="help">Мошеничество</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
