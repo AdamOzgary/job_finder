@@ -21,8 +21,11 @@ class Organization(m.Model):
     description = m.TextField()
     reg_date = m.DateTimeField(auto_now_add=True)
 
-    #владелец
-    owner = m.OneToOneField(User, m.CASCADE, related_name='organizations')
+
+    owner = m.ForeignKey(User,
+            on_delete=m.CASCADE,
+            related_name='organizations'
+    )
 
 
 class Recruiter(m.Model): 
@@ -30,10 +33,15 @@ class Recruiter(m.Model):
     description = m.CharField(max_length=50)
     reg_date = m.DateTimeField(auto_now_add=True)
 
-    # пользователем
-    user = m.OneToOneField(User, m.CASCADE, pk=True)
-    # одна огранизация - много рекрутеров
-    organization = m.ForeignKey(Organization, m.CASCADE, related_name="recruiters")
+
+    user = m.OneToOneField(User,
+            on_delete=m.CASCADE,
+            pk=True
+    )
+    organization = m.ForeignKey(Organization,
+            m.CASCADE,
+            related_name="recruiters"
+    )
 
 
 class Vacancy(m.Model):
@@ -42,9 +50,32 @@ class Vacancy(m.Model):
     description = m.TextField()
     post_date = m.DateTimeField(auto_now_add=True)
 
-    # одна категория - много вакансий
-    category = m.ForeignKey(Category, m.CASCADE, related_name='vacanсies')
-    # много вакансий - много навыков
-    key_skills = m.ManyToManyField(KeySkills, "vacancies")
-    # одна категория - много вакансий
-    organization = m.ForeignKey(Organization, m.CASCADE)
+
+    category = m.ForeignKey(Category,
+            on_delete=m.CASCADE,
+            related_name='vacanсies'
+    )
+    key_skills = m.ManyToManyField(KeySkills,
+            on_delete=m.SET_NULL,
+            related_name="vacancies"
+    )
+    organization = m.ForeignKey(Organization,
+            on_delete=m.CASCADE,
+            related_name="vacancies"
+    )
+
+
+class Resume(m.Model):
+    """Резюме"""
+    title = m.TextField(db_index=True)
+    descrtiption = m.TextField(blank=True)
+    post_date = m.DateTimeField(auto_now_add=True)
+    
+
+    user = m.ForeignKey(User,
+            related_name="resumes"
+    )
+    key_skills = m.ManyToManyField(KeySkills,
+            on_delete=m.SET_NULL,
+            related_name="resumes"
+    )
