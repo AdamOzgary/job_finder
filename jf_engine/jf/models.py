@@ -73,6 +73,7 @@ class Resume(m.Model):
     
 
     user = m.ForeignKey(User,
+            on_delete=m.CASCADE,
             related_name="resumes"
     )
     key_skills = m.ManyToManyField(KeySkills,
