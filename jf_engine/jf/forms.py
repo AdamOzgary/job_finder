@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
 
-class UserForm(f.ModelForm):
+class CreateUserForm(f.ModelForm):
     error_messages = {
         'password_mismatch': _('The two password fields didn’t match.'),
     }
@@ -27,11 +27,6 @@ class UserForm(f.ModelForm):
         fields = ['first_name', 'last_name', 'username', 'email']
         field_classes = {'username': UsernameField}
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     if self._meta.model.USERNAME_FIELD in self.fields:
-    #         self.fields[self._meta.model.USERNAME_FIELD].widget.attrs['autofocus'] = True
-
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
@@ -44,8 +39,6 @@ class UserForm(f.ModelForm):
 
     def _post_clean(self):
         super()._post_clean()
-        # Validate the password after self.instance is updated with form data
-        # by super().
         password = self.cleaned_data.get('password2')
         if password:
             try:
@@ -60,3 +53,11 @@ class UserForm(f.ModelForm):
             user.save()
         return user
 
+
+class LoginUserForm(f.Form):
+    error_messages = None
+    username = UsernameField()
+    password = f.CharField(widget=f.PasswordInput)
+
+
+# class CreateOrganizationForm(f.ModelForm):

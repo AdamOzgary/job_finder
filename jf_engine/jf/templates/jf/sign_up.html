@@ -3,6 +3,9 @@
 {% block content %}
     <form action="" method="POST">
         {% csrf_token %}
+        {% if error %}
+            <div class="field-error">{{ error }}</div>
+        {% endif %}
         {% for field in form %}
             <div class="field">
                 {% if field.errors %}

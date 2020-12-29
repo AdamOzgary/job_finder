@@ -58,6 +58,7 @@ a {
 .navbar .right,
 .navbar .left {
     display: flex;
+    align-items: center;
 }
 
 .navbar .right .el:not(:last-child), 

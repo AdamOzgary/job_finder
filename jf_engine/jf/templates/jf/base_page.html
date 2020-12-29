@@ -23,13 +23,13 @@
                 </div>
                 <div class="right">
                     {% if user.is_authenticated %}
-                        <div class="user-info el">{{ user.get_username }}</div>
-                        <div class="drop-down-user-list">
-                            <a href="#" class="sign-out"><div class="btn">Sign Out</div></a>
+                        <div class="user-info el btn">@{{ user.get_username }}</div>
+                        <div class="drop-down-user-list hidden">
+                            <a href="{% url 'logout' %}" class="sign-out"><div class="btn">Sign Out</div></a>
                         </div>
                     {% else %}
-                        <a href="#" class="sign-in el"><div class="btn">Sign In</div></a>
-                        <a href="#" class="sign-up el"><div class="btn">Sign Up</div></a>
+                        <a href="{% url 'sign_in' %}" class="sign-in el"><div class="btn">Sign In</div></a>
+                        <a href="{% url 'sign_up' %}" class="sign-up el"><div class="btn">Sign Up</div></a>
                     {% endif %}
                 </div>
             </div>
