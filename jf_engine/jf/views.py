@@ -2,16 +2,21 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
+from django.core.exceptions import ValidationError
 
-
+from .forms import form_template
 from .forms import CreateUserForm, LoginUserForm
-from .utils import AuthenticateViewMixin
+from .forms import KeySkillsForm, CategoryForm
+from .forms import OrganizationForm, RecruiterForm
+from .forms import ResumeForm, VacancyForm
+from .mixins import FormSaveViewMixin, ViewMixin, AdminRequiredMixin
+
 
 
 def show_base(request):
-    return render(request, 'jf/index.html')
-
+    return render(request, 'jf/base_page.html')
 
 @login_required
 def logout_req(request):
@@ -19,50 +24,64 @@ def logout_req(request):
     return redirect(reverse('home'))
 
 
-class CreateUser(View):
-    def get(self, request):
-        form = CreateUserForm()
-        return render(request, 'jf/sign_up.html', context={'form': form})
-    
-    def post(self, request):
-        bound_form = CreateUserForm(request.POST)
+class CreateUserView(ViewMixin, View):
+    form = CreateUserForm
 
-        if bound_form.is_valid():
-            bound_form.save()
-            username = bound_form.cleaned_data.get('username')
-            password = bound_form.cleaned_data.get('password1')
-            
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            return show_base(request)
-        return render(request, 'jf/sign_up.html', context={'form': bound_form})
+    def if_valid(self, form, request):
+        form.save()
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        
+        user = authenticate(username=username, password=password)
+        login(request, user)
+        return redirect(reverse('home'))
 
 
-class AuthenticateUser(View):
-    def get(self, request):
-        form = LoginUserForm()
-        return render(request, 'jf/sign_up.html', context={'form': form})
+class LoginUserView(ViewMixin, View):
+    form = LoginUserForm
 
-    def post(self, request): 
-        bound_form = LoginUserForm(request.POST)
+    def if_valid(self, form, request):
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
 
-        if bound_form.is_valid():
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect(reverse('home'))
+            else: 
+                # do something
+                pass
+        error = '''Please enter a correct username and password.'''
+        return render(request,form_template, context={
+                'form': form,
+                'error': error
+        })
 
-            username = bound_form.cleaned_data.get('username')
-            password = bound_form.cleaned_data.get('password')
 
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    print('актив')
-                    return show_base(request)
-            else:
-                error = 'Please enter a correct username and password.\
-                    Note that both fields may be case-sensitive.'
-                return render(request, 'jf/sign_up.html', context={
-                        'form': bound_form,
-                        'error': error
-                })
-        print("Не валидная форма", bound_form)
-        return render(request, 'jf/sign_up.html', context={'form': bound_form})
+class AddCategoryView(FormSaveViewMixin, View):
+    form = CategoryForm
+
+
+class AddKeySkillView(FormSaveViewMixin, View):
+    form = KeySkillsForm
+
+
+class AddOrganizationView(ViewMixin, View):
+    form = OrganizationForm
+
+    def if_valid(self, form, request):
+        form.save(request)
+        return redirect(reverse(self.redirect_to))
+
+
+class AddRecruiterView(ViewMixin, View):
+    form = RecruiterForm
+
+
+class AddVacancyView(ViewMixin, View):
+    form = VacancyForm
+
+
+class AddResumeView(ViewMixin, View):
+    form = ResumeForm

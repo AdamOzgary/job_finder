@@ -1,6 +1,12 @@
 {% extends 'jf/base_page.html' %}
 
+{% block title %}
+    {{ form.page_title }}
+{% endblock %}
+
 {% block content %}
+    <h1>{{ form.page_title }}</h1>
+
     <form action="" method="POST">
         {% csrf_token %}
         {% if error %}
@@ -15,6 +21,6 @@
                 {{ field }}
             </div>
         {% endfor %}
-        <button type="submit" class="btn">Sign Up</button>
+        <button type="submit" class="btn">{{ form.submit_btn }}</button>
     </form>
 {% endblock %}

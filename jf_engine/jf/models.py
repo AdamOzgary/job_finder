@@ -1,5 +1,8 @@
 from django.db import models as m
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class KeySkills(m.Model):
@@ -17,30 +20,26 @@ class Category(m.Model):
 class Organization(m.Model):
     """Организация"""
     name = m.TextField(unique=True)
-    site_link = m.URLField()
+    site_link = m.URLField(unique=True)
+    slug = m.SlugField(unique=True, max_length=20)
     description = m.TextField()
     reg_date = m.DateTimeField(auto_now_add=True)
 
-
-    owner = m.ForeignKey(User,
-            on_delete=m.CASCADE,
-            related_name='organizations'
+    owner = m.OneToOneField(User,
+        on_delete=m.CASCADE,
+        related_name='organizations'
     )
-
 
 class Recruiter(m.Model): 
     """HR-менеджеры"""
-    description = m.CharField(max_length=50)
-    reg_date = m.DateTimeField(auto_now_add=True)
-
-
+    description = m.TextField()
     user = m.OneToOneField(User,
-            on_delete=m.CASCADE,
-            primary_key=True
+        on_delete=m.CASCADE,
+        primary_key=True
     )
     organization = m.ForeignKey(Organization,
-            m.CASCADE,
-            related_name="recruiters"
+        m.CASCADE,
+        related_name="recruiters"
     )
 
 
@@ -52,29 +51,33 @@ class Vacancy(m.Model):
 
 
     category = m.ForeignKey(Category,
-            on_delete=m.CASCADE,
-            related_name='vacanсies'
+        on_delete=m.CASCADE,
+        related_name='vacanсies'
     )
     key_skills = m.ManyToManyField(KeySkills,
-            related_name="vacancies"
+        related_name="vacancies"
     )
     organization = m.ForeignKey(Organization,
-            on_delete=m.CASCADE,
-            related_name="vacancies"
+        on_delete=m.CASCADE,
+        related_name="vacancies"
     )
 
 
 class Resume(m.Model):
     """Резюме"""
     title = m.TextField(db_index=True)
-    descrtiption = m.TextField(blank=True)
+    description = m.TextField(blank=True)
     post_date = m.DateTimeField(auto_now_add=True)
     
 
     user = m.ForeignKey(User,
-            on_delete=m.CASCADE,
-            related_name="resumes"
+        on_delete=m.CASCADE,
+        related_name="resumes"
+    )
+    category = m.ForeignKey(Category, 
+        on_delete=m.CASCADE,
+        related_name='resumes'     
     )
     key_skills = m.ManyToManyField(KeySkills,
-            related_name="resumes"
+        related_name="resumes"
     )
