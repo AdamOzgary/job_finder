@@ -30,6 +30,12 @@ class Organization(m.Model):
         related_name='organizations'
     )
 
+class OrganiztionBranch(m.Model):
+    """Филиал"""
+    organization = m.ForeignKey(Organization, m.CASCADE)
+    city = m.TextField()
+    addres = m.TextField()
+
 class Recruiter(m.Model): 
     """HR-менеджеры"""
     description = m.TextField()
@@ -57,10 +63,12 @@ class Vacancy(m.Model):
     key_skills = m.ManyToManyField(KeySkills,
         related_name="vacancies"
     )
-    organization = m.ForeignKey(Organization,
-        on_delete=m.CASCADE,
-        related_name="vacancies"
+    org_branch = m.ForeignKey(OrganiztionBranch,
+        m.CASCADE,
+        related_name='vacancies'
     )
+    
+
 
 
 class Resume(m.Model):

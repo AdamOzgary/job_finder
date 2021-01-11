@@ -3,6 +3,7 @@ from django.contrib.auth import password_validation, get_user_model
 from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
+from django.shortcuts import reverse
 
 from .models import (
         KeySkills,
@@ -18,8 +19,12 @@ form_template =  'jf/form_base.html'
 
 
 class CreateUserForm(f.ModelForm):
+    after_submit_info = 'if you '
     submit_btn = 'Sign Up'
     page_title = 'Registration'
+    alt_var_url_name = 'sign_in'
+    alt_var_text = 'Sign In'
+    alt_var_prev_text = 'or you already have an account'
 
     error_messages = {
         'password_mismatch': _('The two password fields didn’t match.'),
@@ -40,7 +45,6 @@ class CreateUserForm(f.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'email']
-        field_classes = {'username': UsernameField}
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -72,6 +76,9 @@ class CreateUserForm(f.ModelForm):
 class LoginUserForm(f.Form):
     submit_btn = 'Sign In'
     page_title = 'Login'
+    alt_var_url_name = 'sign_up'
+    alt_var_text = 'Sign Up'
+    alt_var_prev_text = "or if you don't have an account"
 
     error_messages = None
     username = UsernameField()
@@ -129,6 +136,8 @@ class KeySkillsForm(f.ModelForm):
         model = KeySkills
         fields = ['title', 'slug']
 
+
+
     def clean_slug(self):
         new_slug = self.cleaned_data.get('slug').lower()
 
@@ -179,7 +188,7 @@ class VacancyForm(f.ModelForm):
 
     class Meta:
         model = Vacancy
-        fields = ['title', 'description', 'organization', 'category', 'key_skills']
+        fields = ['title', 'description', 'org_branch', 'category', 'key_skills']
 
 
 class ResumeForm(f.ModelForm):
